@@ -12,9 +12,9 @@ values."
    ;; or `spacemacs'. (default 'spacemacs)
    dotspacemacs-distribution 'spacemacs
    ;; Lazy installation of layers (i.e. layers are installed only when a file
-   ;; with a supported type is opened). Possible values are `all', `unused'
+   ;; with a supported type is opened). Possible values are `a4ll', `unused'
    ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
-   ;;
+   ;; not listed in variable `dotspacemacs-configuration-layers'), `all' will
    ;; lazy install any layer that support lazy installation even the layers
    ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
    ;; installation feature and you have to explicitly list a layer in the
@@ -331,6 +331,10 @@ you should place your code here."
 
   (menu-bar-mode t) ;; menu
 
+  ;; truncate lines
+  (set-default 'truncate-lines t)
+  (setq truncate-partial-width-windows nil)
+
   ;; terminal
   (setq multi-term-program "/bin/bash")
   '(shell-file-name "/bin/bash")
@@ -350,6 +354,7 @@ you should place your code here."
   ;; neotree
   (global-set-key (kbd "<f8>") 'neotree-toggle)
   (setq neo-theme 'arrow)
+  (setq neo-show-updir-line t)
   ;(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 
   ;; short yes/no
