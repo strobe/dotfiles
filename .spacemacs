@@ -410,6 +410,27 @@ you should place your code here."
   ;; comment line
   (global-set-key (kbd "s-/") 'spacemacs/comment-or-uncomment-lines-inverse)
 
+  ;; move caret to beginning-of-line-or-indentation
+  ;; (defun beginning-of-line-or-indentation ()
+  ;;   "move to beginning of line, or indentation"
+  ;;   (interactive)
+  ;;   (if (bolp)
+  ;;       (back-to-indentation)
+  ;;     (beginning-of-line)))
+
+  (defun smart-line-beginning ()
+    "Move point to the beginning of text on the current line; if that is already
+the current position of point, then move it to the beginning of the line."
+    (interactive)
+    (let ((pt (point)))
+      (beginning-of-line-text)
+      (when (eq pt (point))
+        (beginning-of-line))))
+
+  ;;(eval-after-load "cc-mode" 
+  ;;  '(define-key c-mode-base-map (kbd "C-a") 'beginning-of-line-or-indentation))
+  (global-set-key (kbd "C-a") 'smart-line-beginning)
+
   (move-text-default-bindings2)
 )
 
@@ -426,10 +447,10 @@ you should place your code here."
  '(cursor-type (quote bar))
  '(evil-want-Y-yank-to-eol nil)
  '(fci-rule-character-color "#192028")
- '(fci-rule-color "#373b41" t)
+ '(fci-rule-color "#373b41")
  '(highlight-changes-colors (quote ("#ff8eff" "#ab7eff")))
  '(hl-sexp-background-color "#1c1f26")
- '(linum-format " %3i " t)
+ '(linum-format " %3i ")
  '(magit-diff-use-overlays nil)
  '(nrepl-message-colors
    (quote
@@ -449,4 +470,9 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil)))))
+ '(default ((t (:background nil))))
+ '(ensime-implicit-highlight ((t (:underline "gray30"))))
+ '(font-lock-comment-delimiter-face ((t (:foreground "gray40" :slant italic))))
+ '(font-lock-comment-face ((t (:foreground "gray40" :slant italic))))
+ '(font-lock-doc-face ((t (:foreground "#82648a"))))
+ '(linum ((t (:background "#1d1f21" :foreground "gray40" :underline nil :slant normal)))))
