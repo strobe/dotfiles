@@ -67,7 +67,9 @@ values."
                                       terraform-mode
                                       w3m
                                       helm-w3m
-                                      bash-completion)
+                                      bash-completion
+                                      smooth-scroll
+                                      darkroom)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -407,31 +409,28 @@ you should place your code here."
    (global-set-key (kbd "M-<up>") 'move-text-up)
    (global-set-key (kbd "M-<down>") 'move-text-down))
 
+  (move-text-default-bindings2)
+
   ;; comment line
   (global-set-key (kbd "s-/") 'spacemacs/comment-or-uncomment-lines-inverse)
 
-  ;; move caret to beginning-of-line-or-indentation
-  ;; (defun beginning-of-line-or-indentation ()
-  ;;   "move to beginning of line, or indentation"
-  ;;   (interactive)
-  ;;   (if (bolp)
-  ;;       (back-to-indentation)
-  ;;     (beginning-of-line)))
-
   (defun smart-line-beginning ()
     "Move point to the beginning of text on the current line; if that is already
-the current position of point, then move it to the beginning of the line."
+    the current position of point, then move it to the beginning of the line."
     (interactive)
     (let ((pt (point)))
       (beginning-of-line-text)
       (when (eq pt (point))
         (beginning-of-line))))
 
-  ;;(eval-after-load "cc-mode" 
-  ;;  '(define-key c-mode-base-map (kbd "C-a") 'beginning-of-line-or-indentation))
   (global-set-key (kbd "C-a") 'smart-line-beginning)
 
-  (move-text-default-bindings2)
+  ;; smooth scroll
+  ;;(require 'smooth-scroll)
+  ;;(smooth-scroll-mode t)
+  ;;(setq smooth-scroll/vscroll-step-size 5)
+
+  (require 'darkroom)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -447,8 +446,18 @@ the current position of point, then move it to the beginning of the line."
  '(cursor-type (quote bar))
  '(evil-want-Y-yank-to-eol nil)
  '(fci-rule-character-color "#192028")
- '(fci-rule-color "#373b41")
+ '(fci-rule-color "#373b41" t)
  '(highlight-changes-colors (quote ("#ff8eff" "#ab7eff")))
+ '(highlight-tail-colors
+   (quote
+    (("#424748" . 0)
+     ("#63de5d" . 20)
+     ("#4BBEAE" . 30)
+     ("#1DB4D0" . 50)
+     ("#9A8F21" . 60)
+     ("#A75B00" . 70)
+     ("#F309DF" . 85)
+     ("#424748" . 100))))
  '(hl-sexp-background-color "#1c1f26")
  '(linum-format " %3i ")
  '(magit-diff-use-overlays nil)
@@ -457,13 +466,19 @@ the current position of point, then move it to the beginning of the line."
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (ensime hcl-mode powerline spinner org alert gntp markdown-mode hydra parent-mode projectile pkg-info epl request gitignore-mode flx magit-popup git-commit with-editor iedit anzu evil goto-chg undo-tree highlight f s diminish autothemer bind-map bind-key packed dash popup async package-build smartparens log4e sbt-mode scala-mode sanityinc-tommorow-night-theme sanityinc-tommorow-bright-theme yasnippet helm helm-core avy magit company bash-completion helm-w3m w3m yaml-mode xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help psci purescript-mode psc-ide dash-functional intero flycheck hlint-refactor hindent helm-hoogle haskell-snippets company-ghci company-ghc ghc haskell-mode cmm-mode all-the-icons font-lock+ define-word zonokai-theme zenburn-theme zen-and-art-theme ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org terraform-mode tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary orgit organic-green-theme org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme niflheim-theme neotree naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme launchctl jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme elisp-slime-nav dumb-jump dracula-theme django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line)))
+    (darkroom smooth-scroll ensime hcl-mode powerline spinner org alert gntp markdown-mode hydra parent-mode projectile pkg-info epl request gitignore-mode flx magit-popup git-commit with-editor iedit anzu evil goto-chg undo-tree highlight f s diminish autothemer bind-map bind-key packed dash popup async package-build smartparens log4e sbt-mode scala-mode sanityinc-tommorow-night-theme sanityinc-tommorow-bright-theme yasnippet helm helm-core avy magit company bash-completion helm-w3m w3m yaml-mode xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help psci purescript-mode psc-ide dash-functional intero flycheck hlint-refactor hindent helm-hoogle haskell-snippets company-ghci company-ghc ghc haskell-mode cmm-mode all-the-icons font-lock+ define-word zonokai-theme zenburn-theme zen-and-art-theme ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org terraform-mode tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary orgit organic-green-theme org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme niflheim-theme neotree naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme launchctl jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme elisp-slime-nav dumb-jump dracula-theme django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#303030")
  '(pos-tip-foreground-color "#FFFFC8")
  '(psc-ide-add-import-on-completion t t)
  '(psc-ide-rebuild-on-save nil t)
- '(shell-file-name "/bin/bash"))
+ '(shell-file-name "/bin/bash")
+ '(weechat-color-list
+   (unspecified "#242728" "#424748" "#F70057" "#ff0066" "#86C30D" "#63de5d" "#BEB244" "#E6DB74" "#40CAE4" "#06d8ff" "#FF61FF" "#ff8eff" "#00b2ac" "#53f2dc" "#f8fbfc" "#ffffff"))
+ '(xterm-color-names
+   ["#303030" "#D66F84" "#D79887" "#D49A8A" "#94B1A3" "#A8938C" "#989584" "#BAB2A9"])
+ '(xterm-color-names-bright
+   ["#3A3A3A" "#E47386" "#CC816B" "#769188" "#7D6F6A" "#9C8772" "#BAB2A9"]))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
