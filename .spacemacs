@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     html
      yaml
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -67,9 +68,7 @@ values."
                                       terraform-mode
                                       w3m
                                       helm-w3m
-                                      bash-completion
-                                      smooth-scroll
-                                      darkroom)
+                                      bash-completion)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -320,7 +319,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   ;; terminal
   (setq-default dotspacemacs-configuration-layers
-                '((shell :variables shell-default-shell 'multi-term)))
+                '((shell :variables shell-default-shell 'ansi-term)))
   (setq-default dotspacemacs-configuration-layers
                 '((shell :variables shell-default-term-shell "/bin/bash")))
   )
@@ -359,11 +358,37 @@ you should place your code here."
   ; (setenv "PATH" (concat "/usr/local/bin/sbt:" (getenv "PATH")))
   ; (setenv "PATH" (concat "/usr/local/bin/scala:" (getenv "PATH")))
 
-  ;; neotree
+  ;; neotree ;;
   (global-set-key (kbd "<f8>") 'neotree-toggle)
   (setq neo-theme 'arrow)
   (setq neo-show-updir-line t)
-  ;(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  (setq neo-smart-open t)
+  (setq neo-show-hidden-files t)
+
+  (defun neotree-project-dir-toggle ()
+    "Open NeoTree using the project root, using find-file-in-project, or the current buffer directory."
+    (interactive)
+    (let ((project-dir
+           (ignore-errors
+           ;;; Pick one: projectile or find-file-in-project
+                                        ; (projectile-project-root)
+             (ffip-project-root)
+             ))
+          (file-name (buffer-file-name))
+          (neo-smart-open t))
+      (if (and (fboundp 'neo-global--window-exists-p)
+               (neo-global--window-exists-p))
+          (neotree-hide)
+        (progn
+          (neotree-show)
+          (if project-dir
+              (neotree-dir project-dir))
+          (if file-name
+              (neotree-projectile-action)
+            (neotree-find file-name))))))
+
+  (global-set-key (kbd "<f7>") 'neotree-project-dir-toggle);;neotree-projectile-action)
+  ;; ;;
 
   ;; short yes/no
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -408,29 +433,16 @@ you should place your code here."
    (global-set-key (kbd "ESC <down>") 'move-text-down)
    (global-set-key (kbd "M-<up>") 'move-text-up)
    (global-set-key (kbd "M-<down>") 'move-text-down))
-
   (move-text-default-bindings2)
 
   ;; comment line
   (global-set-key (kbd "s-/") 'spacemacs/comment-or-uncomment-lines-inverse)
 
-  (defun smart-line-beginning ()
-    "Move point to the beginning of text on the current line; if that is already
-    the current position of point, then move it to the beginning of the line."
+  ;; show current buffer file path
+  (defun buffer-file-path ()
+    "Show the full path file name in the minibuffer."
     (interactive)
-    (let ((pt (point)))
-      (beginning-of-line-text)
-      (when (eq pt (point))
-        (beginning-of-line))))
-
-  (global-set-key (kbd "C-a") 'smart-line-beginning)
-
-  ;; smooth scroll
-  ;;(require 'smooth-scroll)
-  ;;(smooth-scroll-mode t)
-  ;;(setq smooth-scroll/vscroll-step-size 5)
-
-  (require 'darkroom)
+    (message (buffer-file-name)))
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -446,7 +458,7 @@ you should place your code here."
  '(cursor-type (quote bar))
  '(evil-want-Y-yank-to-eol nil)
  '(fci-rule-character-color "#192028")
- '(fci-rule-color "#373b41" t)
+ '(fci-rule-color "#373b41")
  '(highlight-changes-colors (quote ("#ff8eff" "#ab7eff")))
  '(highlight-tail-colors
    (quote
@@ -466,13 +478,14 @@ you should place your code here."
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (darkroom smooth-scroll ensime hcl-mode powerline spinner org alert gntp markdown-mode hydra parent-mode projectile pkg-info epl request gitignore-mode flx magit-popup git-commit with-editor iedit anzu evil goto-chg undo-tree highlight f s diminish autothemer bind-map bind-key packed dash popup async package-build smartparens log4e sbt-mode scala-mode sanityinc-tommorow-night-theme sanityinc-tommorow-bright-theme yasnippet helm helm-core avy magit company bash-completion helm-w3m w3m yaml-mode xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help psci purescript-mode psc-ide dash-functional intero flycheck hlint-refactor hindent helm-hoogle haskell-snippets company-ghci company-ghc ghc haskell-mode cmm-mode all-the-icons font-lock+ define-word zonokai-theme zenburn-theme zen-and-art-theme ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org terraform-mode tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary orgit organic-green-theme org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme niflheim-theme neotree naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme launchctl jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme elisp-slime-nav dumb-jump dracula-theme django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line)))
+    (web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode darkroom smooth-scroll ensime hcl-mode powerline spinner org alert gntp markdown-mode hydra parent-mode projectile pkg-info epl request gitignore-mode flx magit-popup git-commit with-editor iedit anzu evil goto-chg undo-tree highlight f s diminish autothemer bind-map bind-key packed dash popup async package-build smartparens log4e sbt-mode scala-mode sanityinc-tommorow-night-theme sanityinc-tommorow-bright-theme yasnippet helm helm-core avy magit company bash-completion helm-w3m w3m yaml-mode xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help psci purescript-mode psc-ide dash-functional intero flycheck hlint-refactor hindent helm-hoogle haskell-snippets company-ghci company-ghc ghc haskell-mode cmm-mode all-the-icons font-lock+ define-word zonokai-theme zenburn-theme zen-and-art-theme ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org terraform-mode tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary orgit organic-green-theme org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme niflheim-theme neotree naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme launchctl jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme elisp-slime-nav dumb-jump dracula-theme django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#303030")
  '(pos-tip-foreground-color "#FFFFC8")
  '(psc-ide-add-import-on-completion t t)
  '(psc-ide-rebuild-on-save nil t)
  '(shell-file-name "/bin/bash")
+ '(speedbar-show-unknown-files t)
  '(weechat-color-list
    (unspecified "#242728" "#424748" "#F70057" "#ff0066" "#86C30D" "#63de5d" "#BEB244" "#E6DB74" "#40CAE4" "#06d8ff" "#FF61FF" "#ff8eff" "#00b2ac" "#53f2dc" "#f8fbfc" "#ffffff"))
  '(xterm-color-names
@@ -487,7 +500,11 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(default ((t (:background nil))))
  '(ensime-implicit-highlight ((t (:underline "gray30"))))
+ '(flymake-errline ((t (:background "#1d1f21" :underline (:color "#663322" :style wave)))))
  '(font-lock-comment-delimiter-face ((t (:foreground "gray40" :slant italic))))
  '(font-lock-comment-face ((t (:foreground "gray40" :slant italic))))
  '(font-lock-doc-face ((t (:foreground "#82648a"))))
- '(linum ((t (:background "#1d1f21" :foreground "gray40" :underline nil :slant normal)))))
+ '(linum ((t (:background "#1d1f21" :foreground "gray25" :underline nil :slant normal))))
+ '(neo-file-link-face ((t (:foreground "dark gray"))))
+ '(neo-header-face ((t (:foreground "dim gray"))))
+ '(spacemacs-emacs-face ((t (:background "#556677" :foreground "#373b41" :inherit (quote mode-line))))))
