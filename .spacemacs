@@ -72,7 +72,8 @@ values."
                                       helm-w3m
                                       bash-completion
                                       etags-select
-                                      darkroom)
+                                      darkroom
+                                      cc-mode)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -145,12 +146,12 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(sanityinc-tomorrow-night
-                         majapahit-dark
-                         sanityinc-tomorrow-bright
-                         soft-charcoal
+                         ;majapahit-dark
+                         ;sanityinc-tomorrow-bright
+                         ;soft-charcoal
                          phoenix-dark-mono
-                         niflheim
-                         flatland
+                         ;niflheim
+                         ;flatland
                          darkokai
                          hc-zenburn
                          spacemacs-dark
@@ -159,11 +160,12 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Fira Code";;"Source Code Pro"
+   dotspacemacs-default-font '("Input Mono Compressed";;"Monoid";;"Fira Code";;"Source Code Pro"
                                :size 14
-                               :weight normal
+                               :weight medium
                                :width normal
-                               :powerline-scale 1.2)
+                               :powerline-scale 1.1)
+
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
@@ -343,6 +345,7 @@ you should place your code here."
 
   (menu-bar-mode t) ;; menu
 
+
   ;; truncate lines
   (set-default 'truncate-lines t)
   (setq truncate-partial-width-windows nil)
@@ -376,7 +379,10 @@ you should place your code here."
     (bind-key "M-." 'ensime-edit-definition-with-fallback ensime-mode-map)
     (bind-key "<s-mouse-1>" 'ensime-edit-definition-with-fallback ensime-mode-map))
 
-  (add-hook 'ensime-mode-hook 'ensime-settings)
+  (add-hook 'scala-mode-hook 'ensime-settings)
+
+  (defun linum-hook () (linum-mode 1))
+  (add-hook 'elisp-mode-hook 'linum-hook)
 
   ;; ctags for non ensime modes
   (global-set-key (kbd "M-.") 'projectile-find-tag)
@@ -515,6 +521,13 @@ you should place your code here."
                 '(auto-completion
                   (haskell :variables haskell-completion-backend 'ghc-mod)))
 
+  ;; font
+  ;; (when (display-graphic-p)
+    ;; (set-face-attribute 'default nil :family "Input Mono Compressed" :height 140 :weight 'medium)
+    ;; (set-face-attribute 'default nil :family "Monoid" :height 110)
+    ;; (set-face-attribute 'default nil :font "Input Mono Condensed-13" :weight 'ultralight)
+    ;; (set-face-attribute 'default nil :family "Fira Code" :height 110)
+  ;; )
 
 )
 
@@ -571,14 +584,16 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil))))
+ '(default ((t (:inherit nil :stipple nil :background "#1d1f21" :foreground "#c5c8c6" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil"))))
  '(ensime-implicit-highlight ((t (:underline "gray30"))))
  '(fringe ((t (:background "#1d1f21" :foreground "gray25"))))
  '(helm-swoop-target-line-face ((t (:background "#112235" :foreground "goldenrod"))))
  '(linum ((t (:background "#1d1f21" :foreground "#333333" :underline nil :slant normal))))
+ '(mode-line ((t (:background "gray20" :foreground "white" :weight normal))))
  '(neo-banner-face ((t (:foreground "color-23" :weight bold))))
- '(neo-dir-link-face ((t (:foreground "#996953"))))
- '(neo-file-link-face ((t (:foreground "gray30"))))
+ '(neo-dir-link-face ((t (:foreground "#996953" :height 0.85))))
+ '(neo-file-link-face ((t (:foreground "gray50"))))
  '(neo-header-face ((t (:background "#282a2e" :foreground "gray46"))))
  '(neo-root-dir-face ((t (:foreground "color-23" :weight bold))))
- '(spacemacs-emacs-face ((t (:background "#556677" :foreground "#373b41" :inherit (quote mode-line))))))
+ '(powerline-active2 ((t (:background "gray25" :foreground "#c5c8c6"))))
+ '(spacemacs-emacs-face ((t (:background "gray30" :foreground "gray70" :inherit (quote mode-line))))))
