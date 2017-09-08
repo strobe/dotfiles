@@ -49,11 +49,10 @@ values."
      auto-completion
      scala
      purescript
+     pandoc
      haskell
      csharp
      markdown
-     pandoc
-     
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom
@@ -77,7 +76,9 @@ values."
                                       cc-mode
                                       ;org-pandoc
                                       transpose-frame
-                                      multiple-cursors)
+                                      multiple-cursors
+                                      peep-dired
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -333,6 +334,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq-default dotspacemacs-configuration-layers
                 '((shell :variables shell-default-term-shell "/bin/bash")))
 
+  (setq-default dotspacemacs-configuration-layers
+                '(auto-completion
+                  (haskell :variables haskell-completion-backend 'ghc-mod)))
+
   )
 
 (defun dotspacemacs/user-config ()
@@ -541,13 +546,28 @@ you should place your code here."
 
   ;; haskell
   (defun haskell-settings ()
-    (auto-complete-mode t))
+    ;; ghc-mod
+    (autoload 'ghc-init "ghc" nil t)
+    (autoload 'ghc-debug "ghc" nil t)
+    (ghc-init)
+    ;; company-ghc
+    (company-mode t)
+    (auto-complete-mode t)
+    (add-to-list 'company-backends 'company-ghc)
+    (add-to-list 'company-backends-haskell-mode
+                 '(company-ghc company-dabbrev-code company-yasnippet))
+    (custom-set-variables '(company-ghc-show-info t))
+
+    (lambda () (global-set-key (kbd "M-<tab>") 'company-complete))
+    (define-key haskell-mode-map (kbd "M-<tab>") 'company-complete))
 
   (add-hook 'haskell-mode-hook 'haskell-settings)
 
-  (setq-default dotspacemacs-configuration-layers
-                '(auto-completion
-                  (haskell :variables haskell-completion-backend 'ghc-mod)))
+
+  (setq dumb-jump-force-searcher 'ag)
+  (setq dumb-jump-selector 'helm)
+  ;(add-hook 'after-init-hook 'global-company-mode)
+  ;; end haskell ;;
 
   ;; helm-swoop
   ;; Save buffer when helm-multi-swoop-edit complete
@@ -557,6 +577,20 @@ you should place your code here."
   (global-set-key (kbd "M-m c") 'mc/edit-lines)
   (global-set-key (kbd "C-c >") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-c <") 'mc/mark-previous-like-this)
+
+
+  (if (executable-find "trash")
+      (defun system-move-file-to-trash (file)
+        "Use `trash' to move FILE to the system trash.
+        Can be installed with `brew install trash', or `brew install osxutils`''."
+        (call-process (executable-find "trash") nil 0 nil file))
+    ;; regular move to trash directory
+    (setq trash-directory "~/.Trash/emacs"))
+
+  ;; peed-dired
+  (setq peep-dired-cleanup-on-disable t)
+  (setq peep-dired-cleanup-eagerly t)
+  (setq peep-dired-ignored-extensions '("mkv" "iso" "mp4" "dmg" "zip" "rar" "avi" "mp3"))
 
   ;; font
   ;; (when (display-graphic-p)
@@ -577,8 +611,6 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
- '(ansi-color-names-vector
-   ["#ded6c5" "#f71010" "#028902" "#ef8300" "#1111ff" "#a020f0" "#358d8d" "#262626"])
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face (quote default))
@@ -659,9 +691,6 @@ static char *gnus-pointer[] = {
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
- '(package-selected-packages
-   (quote
-    (multiple-cursors org-plus-contrib org-projectile org-category-capture transpose-frame pandoc-mode ox-pandoc ht flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck-haskell auto-dictionary helm-company helm-c-yasnippet fuzzy company-web web-completion-data company-statistics company-cabal auto-yasnippet ac-ispell omnisharp shut-up auto-complete csharp-mode etags-select winum solarized-theme madhat2r-theme memoize web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode darkroom smooth-scroll ensime hcl-mode powerline spinner org alert gntp markdown-mode hydra parent-mode projectile pkg-info epl request gitignore-mode flx magit-popup git-commit with-editor iedit anzu evil goto-chg undo-tree highlight f s diminish autothemer bind-map bind-key packed dash popup async package-build smartparens log4e sbt-mode scala-mode sanityinc-tommorow-night-theme sanityinc-tommorow-bright-theme yasnippet helm helm-core avy magit company bash-completion helm-w3m w3m yaml-mode xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help psci purescript-mode psc-ide dash-functional intero flycheck hlint-refactor hindent helm-hoogle haskell-snippets company-ghci company-ghc ghc haskell-mode cmm-mode all-the-icons font-lock+ define-word zonokai-theme zenburn-theme zen-and-art-theme ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org terraform-mode tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary orgit organic-green-theme open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme niflheim-theme neotree naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme launchctl jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme elisp-slime-nav dumb-jump dracula-theme django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#303030")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -705,17 +734,8 @@ static char *gnus-pointer[] = {
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#1d1f21" :foreground "#c5c8c6" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 141 :width condensed :foundry "nil" :family "Input Mono Compressed"))))
+ '(default ((t (:background nil))))
  '(ensime-implicit-highlight ((t (:underline "#224455"))))
  '(eval-sexp-fu-flash ((t (:background "#223344" :foreground "gray"))))
- '(fringe ((t (:background "#1d1f21" :foreground "gray25"))))
- '(helm-swoop-target-line-face ((t (:background "#112235" :foreground "goldenrod"))))
- '(linum ((t (:background "#1d1f21" :foreground "#333333" :underline nil :slant normal))))
- '(mode-line ((t (:background "gray20" :foreground "white" :weight normal))))
- '(neo-banner-face ((t (:foreground "color-23" :weight bold))))
- '(neo-dir-link-face ((t (:foreground "#996953" :height 0.85))))
- '(neo-file-link-face ((t (:foreground "gray50"))))
- '(neo-header-face ((t (:background "#282a2e" :foreground "gray46"))))
- '(neo-root-dir-face ((t (:foreground "color-23" :weight bold))))
  '(powerline-active2 ((t (:background "gray25" :foreground "#c5c8c6"))))
  '(spacemacs-emacs-face ((t (:background "gray30" :foreground "gray70" :inherit (quote mode-line))))))
