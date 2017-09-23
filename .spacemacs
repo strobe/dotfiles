@@ -78,6 +78,8 @@ values."
                                       transpose-frame
                                       multiple-cursors
                                       peep-dired
+                                      tabbar
+                                      ; tabbar-ruler
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -355,6 +357,78 @@ you should place your code here."
 
   (menu-bar-mode t) ;; menu
 
+  ;; Tabbar Settings ;;
+  (tabbar-mode t)
+  (setq tabbar-use-images nil)
+  (global-set-key [(control shift tab)] 'tabbar-forward)
+  (global-set-key [(control meta shift tab)] 'tabbar-backward)
+
+  (when (display-graphic-p) ; set custom tabbars color
+   (set-face-attribute
+   'tabbar-default nil
+   :background "gray20" :foreground "grey40" :height 0.8
+   :box '(:line-width 1 :color "gray20" :style nil))
+
+  (set-face-attribute
+   'tabbar-unselected nil
+   :foreground "gray30"
+   :box '(:line-width 5 :color "gray20" :style nil))
+  
+  (set-face-attribute
+   'tabbar-selected nil
+   :foreground "#C39C67"
+   :background "gray28"
+   :box '(:line-width 5 :color "gray28" :style nil))
+
+  (set-face-attribute
+   'tabbar-highlight nil
+   :background "gray33"
+   :foreground "black"
+   :underline nil
+   :box '(:line-width 5 :color "gray33" :style nil))
+
+  (set-face-attribute
+   'tabbar-button nil
+   :box '(:line-width 1 :color "gray20" :style nil))
+
+  (set-face-attribute
+   'tabbar-separator nil
+   :background "gray20"
+   :height 0.6)
+
+  (set-face-attribute
+   'tabbar-modified nil
+   :foreground "gray20"
+   :box '(:line-width 5 :color "gray20" :style nil))
+
+  (set-face-attribute
+   'tabbar-selected-modified nil
+   :foreground "#995566"
+   :box '(:line-width 5 :color "gray20" :style nil))
+  )
+
+  ;; Change padding of the tabs
+  ;; we also need to set separator to avoid overlapping tabs by highlighted tabs
+  (custom-set-variables
+   '(tabbar-separator (quote (0.5))))
+  ;; adding spaces
+  (defun tabbar-buffer-tab-label (tab)
+    "Return a label for TAB.
+     That is, a string used to represent it on the tab bar."
+    (let ((label  (if tabbar--buffer-show-groups
+                    (format "[%s]  " (tabbar-tab-tabset tab))
+                    (format "%s  " (tabbar-tab-value tab)))))
+    ;; Unless the tab bar auto scrolls to keep the selected tab
+    ;; visible, shorten the tab label to keep as many tabs as possible
+    ;; in the visible area of the tab bar.
+    (if tabbar-auto-scroll-flag
+        label
+      (tabbar-shorten
+       label (max 1 (/ (window-width)
+                       (length (tabbar-view
+                                (tabbar-current-tabset)))))))))
+  ;; ;;
+
   ;; Add window to the right of two horizontally split windows
   (defun split-root-window (size direction)
     (split-window (frame-root-window)
@@ -538,13 +612,38 @@ you should place your code here."
     (interactive)
     (message (buffer-file-name)))
 
+  ;; -- Org mode -- ;;
+
+  (let ((files-paths '("~/Dropbox/dev/10_org/"
+                       "~/Dropbox/dev/33_Notes/"))
+                     (notes-path (expand-file-name "~/Dropbox/dev/10_org/notes.org")))
+    (setq org-directory (expand-file-name "~/Dropbox/dev/10_org/"))
+    ;; capture
+    (setq org-default-notes-file notes-path)
+    ;; agenda
+    (setq org-agenda-files files-paths)
+    (setq org-icalendar-include-todo t)
+    ;; mobile
+    ;;(setq org-mobile-files "path/to/other/files")
+    (setq org-mobile-inbox-for-pull notes-path)
+    (setq org-mobile-directory "~/Dropbox/apps/strobe-MobileOrg/"))
+
+  (setq org-agenda-custom-commands
+        '(("h" tags-todo "CATEGORY=\"home\"")
+          ("w" tags-todo "CATEGORY=\"work\"")
+          ;; other custom agenda commands here
+          ))
+
   ;; ditaa for org mode configuration (aka ANSI -> Diagrams)
   (setq org-confirm-babel-evaluate nil)
   (setq org-ditaa-jar-path "/usr/local/Cellar/ditaa/0.10/libexec/ditaa0_10.jar")
   (org-babel-do-load-languages 'org-babel-load-languages '((ditaa . t)))
   (setq org-export-allow-BIND t)
 
-  ;; haskell
+  ;; -- end -- ;;
+
+  ;; -- Haskell -- ;;
+
   (defun haskell-settings ()
     ;; ghc-mod
     (autoload 'ghc-init "ghc" nil t)
@@ -563,11 +662,11 @@ you should place your code here."
 
   (add-hook 'haskell-mode-hook 'haskell-settings)
 
-
   (setq dumb-jump-force-searcher 'ag)
   (setq dumb-jump-selector 'helm)
   ;(add-hook 'after-init-hook 'global-company-mode)
-  ;; end haskell ;;
+
+  ;; -- end -- ;;
 
   ;; helm-swoop
   ;; Save buffer when helm-multi-swoop-edit complete
@@ -578,6 +677,7 @@ you should place your code here."
   (global-set-key (kbd "C-c >") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-c <") 'mc/mark-previous-like-this)
 
+  ;; -- Osx related -- ;;
 
   (if (executable-find "trash")
       (defun system-move-file-to-trash (file)
@@ -587,18 +687,22 @@ you should place your code here."
     ;; regular move to trash directory
     (setq trash-directory "~/.Trash/emacs"))
 
+  ;; -- end -- ;;
+
   ;; peed-dired
   (setq peep-dired-cleanup-on-disable t)
   (setq peep-dired-cleanup-eagerly t)
-  (setq peep-dired-ignored-extensions '("mkv" "iso" "mp4" "dmg" "zip" "rar" "avi" "mp3"))
+  (setq peep-dired-ignored-extensions '("mkv" "iso" "mp4" "dmg" "zip" "rar" "avi" "mp3" "hs"))
 
   ;; font
-  ;; (when (display-graphic-p)
-    ;; (set-face-attribute 'default nil :family "Input Mono Compressed" :height 140 :weight 'medium)
+  (when (display-graphic-p)
+    (set-face-attribute 'default nil :family "Input" :height 140 :weight 'medium)
     ;; (set-face-attribute 'default nil :family "Monoid" :height 110)
-    ;; (set-face-attribute 'default nil :font "Input Mono Condensed-13" :weight 'ultralight)
+    ;; (set-face-attribute 'default nil :font "Input" :weight 'regular)
     ;; (set-face-attribute 'default nil :family "Fira Code" :height 110)
-  ;; )
+  )
+
+
 
 )
 
@@ -613,6 +717,7 @@ you should place your code here."
    [default bold shadow italic underline bold bold-italic bold])
  '(blink-cursor-mode nil)
  '(column-number-mode t)
+ '(company-ghc-show-info t)
  '(compilation-message-face (quote default))
  '(cursor-type (quote bar))
  '(custom-safe-themes
@@ -691,6 +796,9 @@ static char *gnus-pointer[] = {
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+ '(package-selected-packages
+   (quote
+    (zonokai-theme zenburn-theme zen-and-art-theme yaml-mode xterm-color ws-butler winum which-key web-mode volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme transpose-frame toxi-theme toc-org terraform-mode tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme purple-haze-theme pug-mode psci psc-ide professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode peep-dired pcre2el pbcopy paradox pandoc-mode ox-pandoc osx-trash osx-dictionary orgit organic-green-theme org-projectile org-present org-pomodoro org-download org-bullets open-junk-file omtose-phellack-theme omnisharp oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme neotree naquadah-theme mustang-theme multiple-cursors multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme less-css-mode launchctl jbeans-theme jazz-theme ir-black-theme intero inkpot-theme info+ indent-guide hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-w3m helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haskell-snippets gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu etags-select espresso-theme eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme darktooth-theme darkroom darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web company-statistics company-ghci company-ghc company-cabal column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cmm-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bash-completion badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme all-the-icons alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#303030")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -734,8 +842,11 @@ static char *gnus-pointer[] = {
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil))))
+ '(default ((t (:inherit nil :stipple nil :background "#1d1f21" :foreground "#c5c8c6" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil"))))
  '(ensime-implicit-highlight ((t (:underline "#224455"))))
  '(eval-sexp-fu-flash ((t (:background "#223344" :foreground "gray"))))
+ '(linum ((t (:background "#222427" :foreground "#585556" :underline nil :slant normal))))
  '(powerline-active2 ((t (:background "gray25" :foreground "#c5c8c6"))))
- '(spacemacs-emacs-face ((t (:background "gray30" :foreground "gray70" :inherit (quote mode-line))))))
+ '(spacemacs-emacs-face ((t (:background "gray30" :foreground "gray70" :inherit (quote mode-line)))))
+ '(w3m-anchor ((t (:foreground "SteelBlue3"))))
+ '(w3m-arrived-anchor ((t (:foreground "RoyalBlue3")))))
