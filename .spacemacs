@@ -446,9 +446,7 @@ you should place your code here."
                 ((memq major-mode
                        '(fundamental-mode help-mode apropos-mode Info-mode Man-mode)) "misc")
                 ((memq major-mode
-                       '(comint-mode compilation-mode)) "misc")
-                ((memq major-mode
-                       '(minibuffer-inactive-mode)) "misc")
+                       '(comint-mode compilation-mode minibuffer-inactive-mode neotree-mode)) "misc")
                 ((string-equal "TAGS" (buffer-name)) "misc")
                 ((string-equal "org-src-" (substring (buffer-name) 0 8)) "misc")
                 ((string-equal "*" (substring (buffer-name) 0 1)) "emacs")
