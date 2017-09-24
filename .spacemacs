@@ -339,7 +339,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq-default dotspacemacs-configuration-layers
                 '(auto-completion
                   (haskell :variables haskell-completion-backend 'ghc-mod)))
-
   )
 
 (defun dotspacemacs/user-config ()
@@ -366,14 +365,15 @@ you should place your code here."
   (when (display-graphic-p) ; set custom tabbars color
    (set-face-attribute
    'tabbar-default nil
-   :background "gray20" :foreground "grey40" :height 0.8
+   :background "gray15" :foreground "grey40" :height 0.8
    :box '(:line-width 1 :color "gray20" :style nil))
 
   (set-face-attribute
    'tabbar-unselected nil
    :foreground "gray30"
+   :background "gray20"
    :box '(:line-width 5 :color "gray20" :style nil))
-  
+
   (set-face-attribute
    'tabbar-selected nil
    :foreground "#C39C67"
@@ -389,7 +389,8 @@ you should place your code here."
 
   (set-face-attribute
    'tabbar-button nil
-   :box '(:line-width 1 :color "gray20" :style nil))
+   :background "gray16"
+   :box '(:line-width 1 :color "gray16" :style nil))
 
   (set-face-attribute
    'tabbar-separator nil
@@ -398,14 +399,20 @@ you should place your code here."
 
   (set-face-attribute
    'tabbar-modified nil
-   :foreground "gray20"
+   :foreground "gray30"
+   :background "gray20"
    :box '(:line-width 5 :color "gray20" :style nil))
 
   (set-face-attribute
    'tabbar-selected-modified nil
    :foreground "#995566"
-   :box '(:line-width 5 :color "gray20" :style nil))
+   :background "gray23"
+   :box '(:line-width 5 :color "gray23" :style nil))
   )
+
+  ;; customize powerline color to has better fit with toolbar
+  (set-face-attribute 'powerline-inactive2 nil
+                      :background "gray18")
 
   ;; Change padding of the tabs
   ;; we also need to set separator to avoid overlapping tabs by highlighted tabs
@@ -427,6 +434,27 @@ you should place your code here."
        label (max 1 (/ (window-width)
                        (length (tabbar-view
                                 (tabbar-current-tabset)))))))))
+
+    (defun tabbar-buffer-groups-function ()
+    "Returns the name of the tab group names the current buffer belongs to."
+    (list (cond ((member (buffer-name)
+                         '("*scratch*")) "user")
+                ((eq major-mode
+                     'dired-mode) "user")
+                ((memq major-mode
+                       '(tex-mode latex-mode text-mode xml-mode)) "user")
+                ((memq major-mode
+                       '(fundamental-mode help-mode apropos-mode Info-mode Man-mode)) "misc")
+                ((memq major-mode
+                       '(comint-mode compilation-mode)) "misc")
+                ((memq major-mode
+                       '(minibuffer-inactive-mode)) "misc")
+                ((string-equal "TAGS" (buffer-name)) "misc")
+                ((string-equal "org-src-" (substring (buffer-name) 0 8)) "misc")
+                ((string-equal "*" (substring (buffer-name) 0 1)) "emacs")
+                (t "user"))))
+
+  (setq tabbar-buffer-groups-function 'tabbar-buffer-groups-function)
   ;; ;;
 
   ;; Add window to the right of two horizontally split windows
@@ -798,7 +826,7 @@ static char *gnus-pointer[] = {
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (zonokai-theme zenburn-theme zen-and-art-theme yaml-mode xterm-color ws-butler winum which-key web-mode volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme transpose-frame toxi-theme toc-org terraform-mode tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme purple-haze-theme pug-mode psci psc-ide professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode peep-dired pcre2el pbcopy paradox pandoc-mode ox-pandoc osx-trash osx-dictionary orgit organic-green-theme org-projectile org-present org-pomodoro org-download org-bullets open-junk-file omtose-phellack-theme omnisharp oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme neotree naquadah-theme mustang-theme multiple-cursors multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme less-css-mode launchctl jbeans-theme jazz-theme ir-black-theme intero inkpot-theme info+ indent-guide hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-w3m helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haskell-snippets gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu etags-select espresso-theme eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme darktooth-theme darkroom darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web company-statistics company-ghci company-ghc company-cabal column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cmm-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bash-completion badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme all-the-icons alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (w3m iedit smartparens goto-chg haskell-mode helm helm-core markdown-mode projectile magit magit-popup git-commit async org-plus-contrib flycheck s zonokai-theme zenburn-theme zen-and-art-theme yaml-mode xterm-color ws-butler winum which-key web-mode volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme transpose-frame toxi-theme toc-org terraform-mode tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme purple-haze-theme pug-mode psci psc-ide professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode peep-dired pcre2el pbcopy paradox pandoc-mode ox-pandoc osx-trash osx-dictionary orgit organic-green-theme org-projectile org-present org-pomodoro org-download org-bullets open-junk-file omtose-phellack-theme omnisharp oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme neotree naquadah-theme mustang-theme multiple-cursors multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme less-css-mode launchctl jbeans-theme jazz-theme ir-black-theme intero inkpot-theme info+ indent-guide hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-w3m helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haskell-snippets gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu etags-select espresso-theme eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme darktooth-theme darkroom darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web company-statistics company-ghci company-ghc company-cabal column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cmm-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bash-completion badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme all-the-icons alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#303030")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -842,10 +870,8 @@ static char *gnus-pointer[] = {
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#1d1f21" :foreground "#c5c8c6" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil"))))
  '(ensime-implicit-highlight ((t (:underline "#224455"))))
  '(eval-sexp-fu-flash ((t (:background "#223344" :foreground "gray"))))
- '(linum ((t (:background "#222427" :foreground "#585556" :underline nil :slant normal))))
  '(powerline-active2 ((t (:background "gray25" :foreground "#c5c8c6"))))
  '(spacemacs-emacs-face ((t (:background "gray30" :foreground "gray70" :inherit (quote mode-line)))))
  '(w3m-anchor ((t (:foreground "SteelBlue3"))))
