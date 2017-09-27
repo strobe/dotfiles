@@ -448,6 +448,7 @@ you should place your code here."
                        '(comint-mode compilation-mode minibuffer-inactive-mode neotree-mode)) "misc")
                 ((string-equal "TAGS" (buffer-name)) "misc")
                 ((string-equal "org-src-" (substring (buffer-name) 0 8)) "misc")
+                ((string-equal "*helm" (substring (buffer-name) 0 5)) "misc")
                 ((string-equal "*" (substring (buffer-name) 0 1)) "emacs")
                 (t "user"))))
 
