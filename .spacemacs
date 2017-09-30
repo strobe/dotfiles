@@ -640,12 +640,28 @@ you should place your code here."
 
   ;; -- Org mode -- ;;
 
-  (let ((files-paths '("~/Dropbox/dev/10_org/"
-                       "~/Dropbox/dev/33_Notes/"))
-                     (notes-path (expand-file-name "~/Dropbox/dev/10_org/notes.org")))
+  (let ((files-paths '("~/Dropbox/dev/10_org/"))
+        (notes-path (expand-file-name "~/Dropbox/dev/10_org/notes.org")))
     (setq org-directory (expand-file-name "~/Dropbox/dev/10_org/"))
     ;; capture
     (setq org-default-notes-file notes-path)
+    (setq org-capture-templates
+          '(("t" "todo" entry (file+headline (lambda ()(concat org-directory "notes.org")) "Tasks")
+             "* TODO %?\n %U\n")
+
+            ("n" "random note" entry (file+headline (lambda ()(concat org-directory "notes.org")) "Random")
+             "* %? :NOTE:\n%U\n")
+
+            ("w" "work note" entry (file+headline (lambda ()(concat org-directory "notes.org")) "Work Notes")
+             "* %? :NOTE\n \n%U\n")
+
+            ("h" "home note" entry (file+headline (lambda ()(concat org-directory "notes.org")) "Home Notes")
+             "* %? :NOTE:\n%U\n")
+
+            ("j" "journal" entry (file+olp+datetree (lambda ()(concat org-directory "journal.org")))
+             "* %?\nEntered on %U\n  %i\n")
+            ))
+
     ;; agenda
     (setq org-agenda-files files-paths)
     (setq org-icalendar-include-todo t)
@@ -722,10 +738,11 @@ you should place your code here."
 
   ;; font
   (when (display-graphic-p)
-    (set-face-attribute 'default nil :family "Input" :height 140 :weight 'medium)
-    ;; (set-face-attribute 'default nil :family "Monoid" :height 110)
-    ;; (set-face-attribute 'default nil :font "Input" :weight 'regular)
-    ;; (set-face-attribute 'default nil :family "Fira Code" :height 110)
+    (set-face-attribute 'default nil :family "Input Mono Compressed" :height 140)
+    ;; (set-face-attribute 'default nil :family "Input" :height 140)
+    ;; (set-face-attribute 'default nil :family "Monoid" :height 140)
+    ;; (set-face-attribute 'default nil :font "Hasklig" :height 140)
+    ;; (set-face-attribute 'default nil :family "Fira Code" :height 140)
   )
 
 
