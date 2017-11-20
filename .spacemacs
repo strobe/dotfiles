@@ -493,6 +493,13 @@ you should place your code here."
   (setq ensime-startup-notification nil)
   (setq ensime-startup-snapshot-notification nil)
 
+  ;; indent configuration for case like
+  ;;      val t = stream
+  ;;        .map(v => {
+  ;;          logger.warn(v.toString())
+  ;;          val j = compact(render(v))
+  (setq scala-indent:align-parameters nil)
+  
   ;; ensime - etags-select (see: http://ensime.org/editors/emacs/hacks/#tags
   ;;   and https://gist.github.com/salomvary/3372e9cd40f5b09a928b)
   (defun ensime-edit-definition-with-fallback ()
@@ -735,6 +742,9 @@ you should place your code here."
   (setq peep-dired-cleanup-on-disable t)
   (setq peep-dired-cleanup-eagerly t)
   (setq peep-dired-ignored-extensions '("mkv" "iso" "mp4" "dmg" "zip" "rar" "avi" "mp3" "hs"))
+
+  ;; dired default target dir (for mc like operations)
+  (setq dired-dwim-target t)
 
   ;; font
   (when (display-graphic-p)
