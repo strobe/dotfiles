@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     python
      html
      yaml
      ;; ----------------------------------------------------------------
@@ -79,6 +80,8 @@ values."
                                       multiple-cursors
                                       peep-dired
                                       tabbar
+                                      ghub
+                                      magithub
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -347,6 +350,16 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  (require 'helm-bookmark)
+  (require 'ghub)
+  (require 'magithub)
+  ;; (use-package magithub
+    ;; :after magit
+    ;; :config (magithub-feature-autoinject t))
+  (require 'magithub-issue-view)
+  ;; magithub
+  (magithub-feature-autoinject 'pull-request-merge)
+  (magithub-feature-autoinject 'pull-request-checkout)
 
   ;; set scrathc buffer after start - see https://github.com/syl20bnr/spacemacs/issues/6899
   (when (string= "*scratch*" (buffer-name))
