@@ -82,6 +82,7 @@ values."
                                       tabbar
                                       ghub
                                       magithub
+                                      dash-at-point
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -350,14 +351,19 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  (require 'helm-bookmark)
-  (require 'ghub)
-  (require 'magithub)
+  (require 'helm-bookmark) ;; fix for https://github.com/syl20bnr/spacemacs/pull/9547
+ 
+  (defalias 'list-buffer 'ibuffer) ; make ibuffer default
+  (defalias 'buffer-menu 'ibuffer)
+
+
   ;; (use-package magithub
     ;; :after magit
     ;; :config (magithub-feature-autoinject t))
   (require 'magithub-issue-view)
   ;; magithub
+  (require 'ghub)
+  (require 'magithub)
   (magithub-feature-autoinject 'pull-request-merge)
   (magithub-feature-autoinject 'pull-request-checkout)
 
@@ -369,58 +375,58 @@ you should place your code here."
   (menu-bar-mode t) ;; menu
 
   ;; Tabbar Settings ;;
-  (tabbar-mode t)
-  (setq tabbar-use-images nil)
-  (global-set-key [(control shift tab)] 'tabbar-forward)
-  (global-set-key [(control meta shift tab)] 'tabbar-backward)
+  ;; (progn (tabbar-mode t)
+  ;; (setq tabbar-use-images nil)
+  ;; (global-set-key [(control shift tab)] 'tabbar-forward)
+  ;; (global-set-key [(control meta shift tab)] 'tabbar-backward)
 
-  (when (display-graphic-p) ; set custom tabbars color
-   (set-face-attribute
-   'tabbar-default nil
-   :background "gray15" :foreground "grey40" :height 0.8
-   :box '(:line-width 1 :color "gray20" :style nil))
+  ;; (when (display-graphic-p) ; set custom tabbars color
+  ;;  (set-face-attribute
+  ;;  'tabbar-default nily
+  ;;  :background "gray15" :foreground "grey40" :height 0.8
+  ;;  :box '(:line-width 1 :color "gray20" :style nil))
 
-  (set-face-attribute
-   'tabbar-unselected nil
-   :foreground "gray40"
-   :background "gray20"
-   :box '(:line-width 5 :color "gray20" :style nil))
+  ;; (set-face-attribute
+  ;;  'tabbar-unselected nil
+  ;;  :foreground "gray40"
+  ;;  :background "gray20"
+  ;;  :box '(:line-width 5 :color "gray20" :style nil))
 
-  (set-face-attribute
-   'tabbar-selected nil
-   :foreground "#C39C67"
-   :background "gray28"
-   :box '(:line-width 5 :color "gray28" :style nil))
+  ;; (set-face-attribute
+  ;;  'tabbar-selected nil
+  ;;  :foreground "#C39C67"
+  ;;  :background "gray28"
+  ;;  :box '(:line-width 5 :color "gray28" :style nil))
 
-  (set-face-attribute
-   'tabbar-highlight nil
-   :background "gray33"
-   :foreground "black"
-   :underline nil
-   :box '(:line-width 5 :color "gray33" :style nil))
+  ;; (set-face-attribute
+  ;;  'tabbar-highlight nil
+  ;;  :background "gray33"
+  ;;  :foreground "black"
+  ;;  :underline nil
+  ;;  :box '(:line-width 5 :color "gray33" :style nil))
 
-  (set-face-attribute
-   'tabbar-button nil
-   :background "gray16"
-   :box '(:line-width 1 :color "gray16" :style nil))
+  ;; (set-face-attribute
+  ;;  'tabbar-button nil
+  ;;  :background "gray16"
+  ;;  :box '(:line-width 1 :color "gray16" :style nil))
 
-  (set-face-attribute
-   'tabbar-separator nil
-   :background "gray20"
-   :height 0.6)
+  ;; (set-face-attribute
+  ;;  'tabbar-separator nil
+  ;;  :background "gray20"
+  ;;  :height 0.6)
 
-  (set-face-attribute
-   'tabbar-modified nil
-   :foreground "gray30"
-   :background "gray20"
-   :box '(:line-width 5 :color "gray20" :style nil))
+  ;; (set-face-attribute
+  ;;  'tabbar-modified nil
+  ;;  :foreground "gray30"
+  ;;  :background "gray20"
+  ;;  :box '(:line-width 5 :color "gray20" :style nil))
 
-  (set-face-attribute
-   'tabbar-selected-modified nil
-   :foreground "#995566"
-   :background "gray23"
-   :box '(:line-width 5 :color "gray23" :style nil))
-  )
+  ;; (set-face-attribute
+  ;;  'tabbar-selected-modified nil
+  ;;  :foreground "#995566"
+  ;;  :background "gray23"
+  ;;  :box '(:line-width 5 :color "gray23" :style nil))
+  ;; ))
 
   ;; customize powerline color to has better fit with toolbar
   (set-face-attribute 'powerline-inactive2 nil
@@ -512,7 +518,6 @@ you should place your code here."
   ;;          logger.warn(v.toString())
   ;;          val j = compact(render(v))
   (setq scala-indent:align-parameters nil)
-  
   ;; ensime - etags-select (see: http://ensime.org/editors/emacs/hacks/#tags
   ;;   and https://gist.github.com/salomvary/3372e9cd40f5b09a928b)
   (defun ensime-edit-definition-with-fallback ()
@@ -523,6 +528,7 @@ you should place your code here."
       (projectile-find-tag)))
 
   (defun ensime-settings ()
+    (setq evil-mode nil)
     (bind-key "M-." 'ensime-edit-definition-with-fallback ensime-mode-map)
     (bind-key "<s-mouse-1>" 'ensime-edit-definition-with-fallback ensime-mode-map))
 
@@ -593,7 +599,7 @@ you should place your code here."
   (global-set-key (kbd "C-x C-b") 'buffer-menu)
 
   ;; enable linum-mode by default
-  (global-linum-mode 1)
+  ;;(global-linum-mode t)
   (setq linum-mode-inhibit-modes-list '(eshell-mode
                                         shell-mode
                                         erc-mode))
@@ -605,9 +611,9 @@ you should place your code here."
   (ad-activate 'linum-on)
 
   (defun linum-hook () (linum-mode 1))
-  (add-hook 'elisp-mode-hook 'linum-hook)
-  (add-hook 'haskell-mode-hook 'linum-hook)
-  (add-hook 'scala-mode-hook 'linum-hook)
+  ;;(add-hook 'elisp-mode-hook 'linum-hook)
+  ;;(add-hook 'haskell-mode-hook 'linum-hook)
+  ;;(add-hook 'scala-mode-hook 'linum-hook)
   ;;
 
   ;; terminal mouse pointer support
@@ -741,6 +747,10 @@ you should place your code here."
 
   ;; -- Osx related -- ;;
 
+  (autoload 'dash-at-point "dash-at-point"
+    "Search the word at point with Dash." t nil)
+  ;;(global-set-key "\C-cd" 'dash-at-point)
+
   (if (executable-find "trash")
       (defun system-move-file-to-trash (file)
         "Use `trash' to move FILE to the system trash.
@@ -862,9 +872,6 @@ static char *gnus-pointer[] = {
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
- '(package-selected-packages
-   (quote
-    (magithub ghub+ apiwrap ghub powerline purescript-mode dash-functional csharp-mode evil avy alert ht hydra dash yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic yasnippet with-editor company haml-mode w3m iedit smartparens goto-chg haskell-mode helm helm-core markdown-mode projectile magit magit-popup git-commit async org-plus-contrib flycheck s zonokai-theme zenburn-theme zen-and-art-theme yaml-mode xterm-color ws-butler winum which-key web-mode volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme transpose-frame toxi-theme toc-org terraform-mode tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme purple-haze-theme pug-mode psci psc-ide professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode peep-dired pcre2el pbcopy paradox pandoc-mode ox-pandoc osx-trash osx-dictionary orgit organic-green-theme org-projectile org-present org-pomodoro org-download org-bullets open-junk-file omtose-phellack-theme omnisharp oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme neotree naquadah-theme mustang-theme multiple-cursors multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme less-css-mode launchctl jbeans-theme jazz-theme ir-black-theme intero inkpot-theme info+ indent-guide hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-w3m helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haskell-snippets gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu etags-select espresso-theme eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme darktooth-theme darkroom darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web company-statistics company-ghci company-ghc company-cabal column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cmm-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bash-completion badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme all-the-icons alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#303030")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -911,11 +918,8 @@ static char *gnus-pointer[] = {
  ;; If there is more than one, they won't work right.
  '(ensime-implicit-highlight ((t (:underline "#224455"))))
  '(eval-sexp-fu-flash ((t (:background "#223344" :foreground "gray"))))
- '(flymake-warnline ((t (:background "#1d1f21" :underline (:color "#694D2A" :style wave)))))
- '(fringe ((t (:background "#1a1c1e" :foreground "#969896"))))
- '(linum ((t (:background "#1a1c1e" :foreground "#383d40" :underline nil :slant normal))))
+ '(flymake-warnline ((t (:background "#1d1f21" :underline (:color "#6B5732" :style wave)))))
  '(powerline-active2 ((t (:background "gray25" :foreground "#c5c8c6"))))
  '(spacemacs-emacs-face ((t (:background "gray30" :foreground "gray70" :inherit (quote mode-line)))))
  '(w3m-anchor ((t (:foreground "SteelBlue3"))))
- '(w3m-arrived-anchor ((t (:foreground "RoyalBlue3"))))
- '(warning ((t (:foreground "#A87A3E")))))
+ '(w3m-arrived-anchor ((t (:foreground "RoyalBlue3")))))
