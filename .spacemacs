@@ -775,6 +775,9 @@ you should place your code here."
   ;; Save buffer when helm-multi-swoop-edit complete
   (setq helm-multi-swoop-edit-save t)
 
+  ;; helm keybinds
+  (global-set-key (kbd "M-s-n") 'helm-projectile-find-file)
+
   (require 'multiple-cursors)
   (global-set-key (kbd "M-m c") 'mc/edit-lines)
   (global-set-key (kbd "C-c >") 'mc/mark-next-like-this)
