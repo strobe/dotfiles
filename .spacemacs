@@ -862,7 +862,7 @@ static char *note[] = {
  '(ensime-implicit-gutter-icons nil)
  '(evil-want-Y-yank-to-eol nil)
  '(fci-rule-character-color "#192028")
- '(fci-rule-color "#373b41")
+ '(fci-rule-color "#373b41" t)
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(gnus-logo-colors (quote ("#0d7b72" "#adadad")) t)
  '(gnus-mode-line-image-cache
@@ -956,8 +956,10 @@ static char *gnus-pointer[] = {
  ;; If there is more than one, they won't work right.
  '(ensime-implicit-highlight ((t (:underline "#224455"))))
  '(eval-sexp-fu-flash ((t (:background "#223344" :foreground "gray"))))
- '(flymake-warnline ((t (:background "#1d1f21" :underline (:color "#6B5732" :style wave)))))
+ '(flymake-errline ((t (:underline (:color "#cc6666" :style wave)))))
+ '(flymake-warnline ((t (:underline (:color "#6B5732" :style wave)))))
  '(powerline-active2 ((t (:background "gray25" :foreground "#c5c8c6"))))
+ '(region ((t (:background "#474b51" :inverse-video nil))))
  '(spacemacs-emacs-face ((t (:background "gray30" :foreground "gray70" :inherit (quote mode-line)))))
  '(w3m-anchor ((t (:foreground "SteelBlue3"))))
  '(w3m-arrived-anchor ((t (:foreground "RoyalBlue3")))))
